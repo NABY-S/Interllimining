@@ -948,7 +948,7 @@ footer{background:var(--coal);border-top:1px solid var(--line);padding-block:56p
       </div>
       <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:center"><button class="btn btn-ghost btn-sm" type="button" id="toDocs">← Gold &amp; documents</button><div class="ptag">Indicative price<br><b class="num" id="dPrice"></b> per gram</div></div>
     </div>
-    <p class="account-notice" role="note">Account records are stored in this browser only and do not confirm gold ownership or storage. Online orders, payments and contributions are unavailable.</p>
+    <p class="account-notice" role="note">Testing mode: simulated purchases are saved in this browser only. No order is submitted, no payment is taken, and no gold ownership or storage is confirmed.</p>
     <div class="tiles">
       <div class="tile hl"><span>Gold recorded</span><b class="num" id="tGrams">0 g</b><small id="tOz">0 troy oz</small></div>
       <div class="tile"><span>Indicative value</span><b class="num" id="tValue">€0</b><small>At the reference price</small></div>
@@ -968,8 +968,9 @@ footer{background:var(--coal);border-top:1px solid var(--line);padding-block:56p
       </div>
       <div class="col">
         <section class="panel" aria-labelledby="hBuy">
-          <h3 id="hBuy">Buy gold</h3>
-          <div class="order">
+          <h3 id="hBuy">Test a gold purchase</h3>
+          <form class="order" id="buyForm" novalidate>
+            <p class="note">Testing only: confirm a simulated purchase to add test records to this account. No money moves and no gold is bought or held.</p>
             <div class="seg" role="group" aria-label="Order by"><button type="button" id="byEur" aria-pressed="true">By euro</button><button type="button" id="byG" aria-pressed="false">By grams</button></div>
             <div class="field"><label for="buyAmt" id="buyLbl">Amount (€)</label><input id="buyAmt" type="number" inputmode="decimal" min="0" step="any" value="250"><div class="err" id="buyErr" aria-live="polite"></div></div>
             <div class="chips" id="buyChips"></div>
@@ -979,9 +980,12 @@ footer{background:var(--coal);border-top:1px solid var(--line);padding-block:56p
               <dt>Service fee 1,5 %</dt><dd class="num" id="sFee">—</dd>
               <dt class="tot">Total</dt><dd class="num tot" id="sTot">—</dd>
             </dl></div>
-            <button class="btn btn-ghost" type="button" disabled>Online ordering unavailable</button>
-            <p class="note">Online ordering is currently unavailable. No order or payment can be submitted.</p>
-          </div>
+            <div id="buyStep1"><button class="btn btn-primary" id="buyGo" type="submit" style="width:100%">Review test purchase</button></div>
+            <div id="buyStep2" hidden class="order">
+              <p class="msg info" id="buyConfirmTxt"></p>
+              <div class="cta-row"><button class="btn btn-primary" type="button" id="buyOk" style="flex:1">Add test purchase to account</button><button class="btn btn-ghost" type="button" id="buyEdit">Edit</button></div>
+            </div>
+          </form>
         </section>
         <section class="panel" aria-labelledby="hPlan">
           <h3 id="hPlan">Monthly savings plan</h3>
@@ -1600,7 +1604,7 @@ footer{background:var(--coal);border-top:1px solid var(--line);padding-block:56p
     // history
     var l = '';
     u.tx.slice().reverse().slice(0, 10).forEach(function (x) {
-      l += '<li><div><strong>' + (x.type === 'plan' ? 'Plan contribution' : 'Purchase') + '</strong>' + (x.type === 'plan' ? '<span class="pill">Savings plan</span>' : '') + '<br><small>' + dateDE(x.ts) + ' · ' + eur(x.price) + ' per gram</small></div><div class="v">+' + gfmt(x.grams) + '<br><small>' + eur(x.eur) + '</small></div></li>';
+      l += '<li><div><strong>' + (x.type === 'test' ? 'Test purchase' : x.type === 'plan' ? 'Plan contribution' : 'Purchase') + '</strong>' + (x.type === 'test' ? '<span class="pill">Testing only</span>' : x.type === 'plan' ? '<span class="pill">Savings plan</span>' : '') + '<br><small>' + dateDE(x.ts) + ' · ' + eur(x.price) + ' per gram</small></div><div class="v">+' + gfmt(x.grams) + '<br><small>' + eur(x.eur) + '</small></div></li>';
     });
     $('#txList').innerHTML = l || '<li><span class="note">No purchases yet.</span></li>';
 
@@ -1632,15 +1636,43 @@ footer{background:var(--coal);border-top:1px solid var(--line);padding-block:56p
     $('#byEur').setAttribute('aria-pressed', String(m === 'eur')); $('#byG').setAttribute('aria-pressed', String(m === 'g'));
     $('#buyLbl').textContent = m === 'eur' ? 'Amount (€)' : 'Weight (g)';
     $('#buyAmt').value = m === 'eur' ? 250 : 5;
+    resetBuyStep();
     buyChips(); updateBuy();
   }
   $('#byEur').addEventListener('click', function () { setMode('eur'); });
   $('#byG').addEventListener('click', function () { setMode('g'); });
   $('#buyChips').addEventListener('click', function (e) {
     var b = e.target.closest('.chip'); if (!b) return;
-    $('#buyAmt').value = b.dataset.v; updateBuy();
+    $('#buyAmt').value = b.dataset.v; resetBuyStep(); updateBuy();
   });
-  $('#buyAmt').addEventListener('input', updateBuy);
+  function resetBuyStep() {
+    $('#buyStep1').hidden = false; $('#buyStep2').hidden = true;
+    $('#buyErr').textContent = ''; $('#buyAmt').removeAttribute('aria-invalid');
+  }
+  $('#buyAmt').addEventListener('input', function () { resetBuyStep(); updateBuy(); });
+  $('#buyForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var c = calcBuy(), err = '';
+    if (!c.ok) err = 'Enter an amount.';
+    else if (c.eurTot < MIN_EUR) err = 'The minimum test purchase is ' + eur(MIN_EUR) + (mode === 'g' ? ', about ' + gfmt(MIN_EUR / BUY) + '.' : '.');
+    else if (c.eurTot > MAX_EUR) err = 'The maximum test purchase is ' + eur(MAX_EUR) + '.';
+    $('#buyErr').textContent = err;
+    if (err) { $('#buyAmt').setAttribute('aria-invalid', 'true'); return; }
+    $('#buyAmt').removeAttribute('aria-invalid');
+    $('#buyConfirmTxt').textContent = 'Testing only: this simulated purchase will be saved to this browser account. It will not submit an order, take payment or confirm gold ownership or storage.';
+    $('#buyStep1').hidden = true; $('#buyStep2').hidden = false; $('#buyOk').focus();
+  });
+  $('#buyEdit').addEventListener('click', function () { resetBuyStep(); $('#buyAmt').focus(); });
+  $('#buyOk').addEventListener('click', function () {
+    var u = me(), c = calcBuy();
+    if (!u || !c.ok || c.eurTot < MIN_EUR || c.eurTot > MAX_EUR) return;
+    var total = Math.round(c.eurTot * 100) / 100, grams = round4(total / BUY);
+    allocate(u, grams);
+    u.tx.push({ id: randHex(6), ts: Date.now(), type: 'test', eur: total, grams: grams, price: PRICE });
+    saveUser(u);
+    resetBuyStep(); renderDash();
+    toast('Test purchase added to this browser account. No payment was taken.');
+  });
 
   // plan
   var cancelAsk = false;
