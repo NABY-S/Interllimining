@@ -1,3 +1,4 @@
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Interlli Mining Vault</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -430,6 +431,102 @@ footer{background:var(--coal);border-top:1px solid var(--line);padding-block:56p
 .docs-alert{color:#edc36a;border:1px solid #604b27;padding:12px 14px;max-width:66ch}
 .totop{position:fixed;right:max(16px,3vw);bottom:calc(20px + env(safe-area-inset-bottom,0px));width:52px;height:52px;border-radius:50%;border:0;background:var(--amber);color:#140a02;display:grid;place-items:center;z-index:50;box-shadow:0 10px 30px rgba(0,0,0,.5)}
 .totop:hover{background:var(--ember)}
+
+/* mobile layout */
+@media (max-width:760px){
+  :root{--hdr:64px}
+  html{scroll-padding-top:calc(var(--hdr) + 12px)}
+  body{font-size:.97rem}
+  .wrap{padding-inline:18px}
+  .sec{padding-block:56px}
+  .hero{padding-block:32px 28px}
+  .hero-grid{gap:16px}
+  .arts{max-width:420px;width:100%;margin-inline:auto}
+  .slide{gap:16px}
+  .slide h1{font-size:clamp(2.75rem,12vw,4.25rem)}
+  .eyebrow{font-size:.68rem;letter-spacing:.12em}
+  .cta-row{width:100%;gap:10px}
+  .cta-row>.btn{flex:1 1 180px}
+  .hctl{margin-top:20px}
+  .facts{gap:18px 26px;margin-top:28px;padding-top:18px}
+  .facts b{font-size:1.3rem}
+  .sec-head{gap:12px;margin-bottom:28px}
+  .price-grid,.save-grid,.sec-grid,.contact-grid{gap:18px}
+  .pricebox,.addr-card{padding:20px}
+  .panel{padding:18px}
+  .conv{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+  .tbl{max-width:100%;overscroll-behavior-x:contain;-webkit-overflow-scrolling:touch}
+  table{font-size:.86rem}
+  th,td{padding-inline:8px}
+  .purity{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .door-track{height:auto}
+  .door-track>.wrap{height:auto}
+  .door-sticky,.door-track.static .door-sticky{
+    position:static;
+    height:auto;
+    min-height:0;
+    padding-block:32px;
+    grid-template-columns:minmax(0,1fr);
+    grid-template-rows:auto auto;
+    gap:14px;
+  }
+  .door-copy{gap:12px}
+  .door-copy .lede,.door-copy .scroll-hint{display:none}
+  .door-scene{width:min(100%,420px);max-height:52svh}
+  .vfeat{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;padding-block:32px}
+  .vfeat article{padding:18px}
+  .steps li{padding-right:0}
+  .faq summary{padding:16px 48px 16px 16px}
+  .faq summary::after{right:16px}
+  .faq details p{padding:0 16px 18px}
+  footer{padding-block:40px 28px}
+  .foot{gap:24px 16px}
+  .fine{margin-top:26px}
+  .auth{height:100%;height:100dvh;overflow-y:auto;place-items:start center;overscroll-behavior:contain}
+  .auth-panel{max-height:calc(100dvh - 32px)}
+  .auth-main{padding:26px 20px}
+  .dash{padding-block:26px 64px}
+  .dash-head{gap:14px;margin-bottom:20px}
+  .dash-head>div:last-child{width:100%;align-items:stretch!important}
+  .ptag{flex:1}
+  .tiles{gap:8px}
+  .tile{padding:14px 12px}
+  .tile span{font-size:.65rem;letter-spacing:.08em}
+  .tile b{font-size:clamp(1.1rem,5vw,1.45rem)}
+  .dash-grid{gap:12px}
+  .txl li{grid-template-columns:minmax(0,1fr) auto;gap:4px 8px}
+  .docs{padding-bottom:64px}
+  .banner{height:260px}
+  .banner .wrap{padding-inline:18px}
+  .banner h1{font-size:clamp(2.8rem,12vw,4.5rem);max-width:100%}
+  .docs-card{margin-top:40px;padding:24px 18px}
+  .dl li{grid-template-columns:28px minmax(0,1fr);gap:10px;padding:16px 0}
+  .dl-v{font-size:1rem}
+  .totop{right:16px}
+  .btn{min-height:48px}
+  .btn-sm{min-height:42px}
+  .burger,.arrow{min-width:44px;min-height:44px}
+  .chip{min-height:44px}
+  .seg button,.tabs button{min-height:44px}
+  .faq summary,.certd summary{min-height:48px}
+  button,a,summary{touch-action:manipulation}
+}
+
+@media (max-width:420px){
+  .wrap{padding-inline:16px}
+  .conv,.purity,.vfeat{grid-template-columns:minmax(0,1fr)}
+  .cta-row>.btn{flex-basis:100%}
+  .facts{gap:16px 20px}
+  .cert .row{align-items:center}
+  .cert .row svg{width:84px}
+  .foot{grid-template-columns:minmax(0,1fr)}
+  .foot>div:first-child{grid-column:auto}
+  .tiles{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .proj{gap:8px}
+  .proj div{padding:12px}
+  .proj b{font-size:1.1rem}
+  .docs-card h2{font-size:1.8rem}
+}
 
 </style>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
